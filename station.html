@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111d" />
+    <meta name="description" content="A choice-driven science-fiction story from an alien observation station above Earth." />
+    <title>Observation Station — Earthwatch</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="starfield" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">◉</div>
+          <div>
+            <p class="eyebrow">INTERSTELLAR OBSERVATORY · SECTOR 07</p>
+            <h1>Earthwatch <span>Station</span></h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <span class="link-status"><i></i> UPLINK STABLE</span>
+          <button class="utility-button" id="soundButton" type="button" aria-pressed="false" title="Toggle sound">♪ <span>Sound off</span></button>
+          <button class="utility-button" id="saveButton" type="button" title="Save simulation">↧ <span>Save</span></button>
+          <button class="utility-button" id="loadButton" type="button" title="Load saved simulation">↥ <span>Load</span></button>
+          <button class="utility-button" id="newGameButton" type="button" title="Start a new simulation">↻ <span>New run</span></button>
+        </div>
+      </header>
+
+      <main>
+        <section class="mission-strip" aria-label="Mission status">
+          <div><span class="eyebrow">OBSERVATION CYCLE</span><strong>Earth, year <span id="earthYear">2049</span></strong></div>
+          <div class="cycle-indicator"><span id="dayCounter">01</span><small> / 16</small></div>
+          <div class="save-state" id="saveStatus" aria-live="polite">AUTOSAVE READY</div>
+        </section>
+
+        <div class="game-layout">
+          <aside class="stats-panel panel">
+            <div class="section-heading"><div><p class="eyebrow">PLANETARY READOUT</p><h2>Earth’s balance</h2></div><span class="live-dot" aria-label="Live"></span></div>
+            <p class="panel-intro">Your interventions shift the systems below. No measure moves alone.</p>
+            <div class="stat" data-stat="empathy"><div class="stat-header"><span>Empathy</span><strong id="empathyValue">55</strong></div><div class="bar"><span id="empathyFill"></span></div></div>
+            <div class="stat" data-stat="influence"><div class="stat-header"><span>Influence</span><strong id="influenceValue">45</strong></div><div class="bar"><span id="influenceFill"></span></div></div>
+            <div class="stat" data-stat="fear"><div class="stat-header"><span>Fear</span><strong id="fearValue">40</strong></div><div class="bar"><span id="fearFill"></span></div></div>
+            <div class="stat" data-stat="hope"><div class="stat-header"><span>Hope</span><strong id="hopeValue">60</strong></div><div class="bar"><span id="hopeFill"></span></div></div>
+            <div class="stat" data-stat="control"><div class="stat-header"><span>Control</span><strong id="controlValue">50</strong></div><div class="bar"><span id="controlFill"></span></div></div>
+            <div class="stat" data-stat="integrity"><div class="stat-header"><span>Station integrity</span><strong id="integrityValue">100</strong></div><div class="bar"><span id="integrityFill"></span></div></div>
+            <div class="stats-note"><span>◈</span> Keep every system above zero. Extremes have consequences.</div>
+          </aside>
+
+          <section class="story-panel" aria-labelledby="eventTitle">
+            <div class="event-card panel" id="eventCard">
+              <div class="event-meta"><span class="event-tag" id="eventTag">INCOMING TRANSMISSION</span><span id="eventNumber">FILE 001</span></div>
+              <div class="signal-line" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <p class="eyebrow" id="eventCategory">PLANETARY AFFAIRS</p>
+              <h2 id="eventTitle">Initializing observation…</h2>
+              <p id="eventText" class="event-copy"></p>
+              <div id="choices" class="choices"></div>
+              <p class="choice-hint">SELECT A DIRECTIVE <span>·</span> CONSEQUENCES ARE PERMANENT</p>
+            </div>
+          </section>
+
+          <aside class="log-panel panel">
+            <div class="section-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>Mission feed</h2></div><span class="feed-count" id="feedCount">00</span></div>
+            <ol id="logList" aria-live="polite"></ol>
+            <p class="feed-empty" id="feedEmpty">Your decisions will appear here.</p>
+          </aside>
+        </div>
+      </main>
+      <footer><span>EARTHWATCH FIELD OFFICE</span><span>LISTEN CLOSELY. INTERVENE CAREFULLY.</span><span>◉ 07 · 2049</span></footer>
+    </div>
+
+    <div id="endingOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="endingTitle">
+      <div class="ending-card panel">
+        <p class="eyebrow">OBSERVATION COMPLETE · FINAL REPORT</p>
+        <div class="ending-sigil" aria-hidden="true">✳</div>
+        <h2 id="endingTitle">The Earth has changed.</h2>
+        <p id="endingDescription"></p>
+        <div class="ending-metrics" id="endingMetrics"></div>
+        <button id="restartButton" class="primary-button" type="button">Begin another observation <span>→</span></button>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="script.js"></script>
+  </body>
+</html>
