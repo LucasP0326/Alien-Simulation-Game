@@ -1,430 +1,326 @@
-const initialState = {
-  day: 1,
-  empathy: 55,
-  influence: 45,
-  fear: 40,
-  hope: 60,
-  control: 50,
-  integrity: 100,
-  ending: null,
-};
+const STARTING_STATE = Object.freeze({ empathy: 55, influence: 45, fear: 40, hope: 60, control: 50, integrity: 100 });
+const DAYS_PER_RUN = 12;
+const STAT_KEYS = Object.keys(STARTING_STATE);
+const state = { ...STARTING_STATE };
 
-const state = { ...initialState };
-
-const eventOrder = [
-  "intro",
-  "coastalStorm",
-  "protest",
-  "warheadCrisis",
-  "summit",
-  "oceanSignal",
-  "bioethics",
-  "orbitalDebris",
-  "finale"
-];
-
-const eventMap = {
+// The opening is familiar; the remaining events are shuffled without repeats each run.
+const events = {
   intro: {
-    title: "First Transmission",
-    text: "Your observation station drifts above Earth like a cold star. Below it, nations argue, scientists collaborate, and civilizations dream. From your perspective, the planet is a living machine—fragile, brilliant, and dangerous. You must decide how much to disturb the pattern beneath you.",
+    title: "First Transmission", category: "OBSERVATION DECK", tag: "INCOMING TRANSMISSION",
+    text: "Earth turns beneath your station: a bright, noisy world of storms, songs, and unfinished plans. Your first signal could change how its people see one another—or keep your presence a mystery.",
     choices: [
-      {
-        label: "Broadcast a soft signal to encourage global cooperation.",
-        result: "A gentle pulse ripples through radio arrays across Earth, reminding humanity that it is not alone.",
-        effects: { empathy: 8, hope: 7, fear: -3, influence: 5 },
-        next: "coastalStorm"
-      },
-      {
-        label: "Observe quietly and let the planet evolve without intervention.",
-        result: "The world continues in its own chaotic rhythm, and no one notices the unseen watcher above.",
-        effects: { control: 4, fear: 2, empathy: -3, influence: -2 },
-        next: "coastalStorm"
-      }
-    ]
+      { label: "Send a gentle pulse that encourages people to listen across borders.", result: "A soft signal crosses the planet. For one strange moment, millions pause to hear it.", effects: { empathy: 7, hope: 7, fear: -3, influence: 4 } },
+      { label: "Stay hidden and study how humanity handles its own first crisis.", result: "You keep your distance. Earth carries on, unaware of its quiet audience.", effects: { control: 5, fear: 2, empathy: -2, influence: -2 } },
+    ],
   },
-
-  coastalStorm: {
-    title: "Coastal Storm",
-    text: "A massive cyclone tears across the eastern coastlines. Floodwaters swallow entire neighborhoods. Governments scramble to distribute aid while climate activists demand emergency action. The planet is in pain, and the world is looking at the sky for answers.",
+  storm: {
+    title: "The Turning Storm", category: "CLIMATE & CITIES", tag: "WEATHER ANOMALY",
+    text: "A cyclone is veering toward a crowded coast. Emergency teams are stretched thin, but local volunteers are already moving people to safety. One nudge from orbit could change the storm's course—and the story people tell afterward.",
     choices: [
-      {
-        label: "Create a brief atmospheric disturbance that redirects the storm away from densely populated cities.",
-        result: "The storm bends north, sparing millions. Humanity calls it a miracle. Your station hums with quiet satisfaction.",
-        effects: { control: 9, fear: 5, hope: 7, integrity: -4 },
-        next: "protest"
-      },
-      {
-        label: "Reveal nothing and let natural systems take their course.",
-        result: "The storm destroys coastlines and forces a global conversation about climate policy. The human world learns to panic and to adapt.",
-        effects: { empathy: 4, fear: 8, hope: -6, influence: 3 },
-        next: "protest"
-      }
-    ]
+      { label: "Bend the storm out to sea, risking a glimpse of your power.", result: "The cyclone curls away from the coast. Relief spreads alongside questions about the impossible forecast.", effects: { hope: 8, control: 5, fear: 4, integrity: -5 } },
+      { label: "Boost the evacuation signal and let people protect one another.", result: "The storm lands hard, but early warnings save lives and strengthen local response networks.", effects: { empathy: 7, influence: 3, hope: 3, integrity: 2 } },
+    ],
   },
-
-  protest: {
-    title: "Global Protest",
-    text: "People gather in cities, not only to demand climate reform but to accuse their leaders of failing to act. A chorus of fear and hope rises across the planet. In the middle of it all, a single unknown signal appears in the data from your station.",
+  garden: {
+    title: "A Garden Above the City", category: "FOOD & COMMUNITY", tag: "CIVILIAN REPORT",
+    text: "A rooftop garden has become a neighborhood food source. A developer wants the land for a tower; residents ask for time to prove the garden can feed more people. Your influence could tip the debate.",
     choices: [
-      {
-        label: "Use your influence to release a public message: humanity must unite before the climate crisis deepens.",
-        result: "A message from the sky appears in every major language. It is treated as a call to action. Some call it divine. Others call it manipulation.",
-        effects: { influence: 11, hope: 10, fear: 4, empathy: 7 },
-        next: "protestFollowUp"
-      },
-      {
-        label: "Suppressed the signal and let human leaders take responsibility alone.",
-        result: "The world recoils from the silence. The protests intensify. Some believe they were betrayed by fate itself.",
-        effects: { fear: 8, hope: -5, control: 3, empathy: -2 },
-        next: "warheadCrisis"
-      }
-    ]
+      { label: "Beam a season of perfect growing weather onto the garden.", result: "The harvest is undeniable. The city preserves the garden, though some wonder who arranged the sunshine.", effects: { hope: 7, empathy: 6, influence: 3, integrity: -2 } },
+      { label: "Send the residents a blueprint for a cooperative greenhouse network.", result: "Neighbors organize, share skills, and make the idea bigger than one rooftop.", effects: { empathy: 8, control: -2, hope: 5 } },
+    ],
   },
-
-  protestFollowUp: {
-    title: "After the Signal",
-    text: "The message changes global priorities. Cities begin organizing emergency response, and an unlikely alliance forms between nations, activists, and corporations. But a small number of extremists interpret your act as a sign that something larger is watching them.",
+  signal: {
+    title: "The Ocean's Reply", category: "DEEP BIOSPHERE", tag: "REPEATING SIGNAL",
+    text: "A listening array catches a rhythmic pulse from the deep ocean. Scientists are divided: mineral resonance, animal song, or something stranger. The signal seems to change whenever humans answer.",
     choices: [
-      {
-        label: "Send a second message offering a peace plan with scientific cooperation and fair resource sharing.",
-        result: "The world begins to collaborate, but the more you intervene, the more your presence feels inevitable.",
-        effects: { influence: 9, hope: 7, empathy: 8, fear: -3 },
-        next: "warheadCrisis"
-      },
-      {
-        label: "Turn your attention elsewhere and leave humanity to decide its own future.",
-        result: "The momentum fades. The world still grows more resilient, but it also grows more suspicious of the unknown.",
-        effects: { hope: 3, empathy: -2, control: -5, fear: 4 },
-        next: "warheadCrisis"
-      }
-    ]
+      { label: "Answer with a pattern of prime numbers and invite open study.", result: "The pulses shift into a new rhythm. Researchers share their data across borders, and curiosity beats fear—for now.", effects: { influence: 6, hope: 6, empathy: 4, fear: 2 }, chain: "deepReply" },
+      { label: "Quiet the signal and protect the unknown source from a rush to exploit it.", result: "The deep goes quiet. You buy the hidden life time, but the unanswered mystery feeds speculation.", effects: { control: 5, empathy: 5, fear: 3 } },
+    ],
   },
-
-  warheadCrisis: {
-    title: "Warhead Crisis",
-    text: "A chain of mistakes, paranoia, and military software errors brings nuclear missiles to high alert across two rival powers. The world teeters on the edge of mutual destruction. One false move could erase entire cities.",
+  archive: {
+    title: "The Lost Archive", category: "CULTURE & MEMORY", tag: "DATA RECOVERY",
+    text: "A flood has damaged a town's public archive: family letters, local histories, and the records of a community that has rebuilt itself for generations. A perfect reconstruction is possible, but it would require quietly scanning private memories.",
     choices: [
-      {
-        label: "Temporarily jam a small portion of the satellites in the region to prevent a strike.",
-        result: "A panic-alarm fails to trigger. The missiles remain on standby, but the launch sequence is interrupted. The world breathes again.",
-        effects: { control: 12, fear: -7, hope: 8, integrity: -8 },
-        next: "warheadFollowUp"
-      },
-      {
-        label: "Do nothing. Let tension burn until the nations choose their own path.",
-        result: "The arms race intensifies. World leaders parse every gesture as a threat. The planet trembles with dread.",
-        effects: { fear: 12, hope: -8, empathy: -4, influence: 3 },
-        next: "summit"
-      }
-    ]
+      { label: "Restore only public records and let families decide what to share.", result: "The archive returns with gaps, but its people choose what their history means.", effects: { empathy: 8, influence: 3, control: -2, hope: 4 } },
+      { label: "Rebuild every record from the station's hidden observations.", result: "The archive is flawless. The town is grateful—until someone asks who had access to their memories.", effects: { control: 7, fear: 4, integrity: -2, hope: 2 } },
+    ],
   },
-
-  warheadFollowUp: {
-    title: "The Countdown",
-    text: "The missiles do not launch, but the silence afterward is heavier than the noise. The surviving commanders face a truth they cannot ignore: if they are not in control of the world, then someone else may be. A new wave of fear spreads through every capital.",
+  blackout: {
+    title: "Night Without Power", category: "INFRASTRUCTURE", tag: "GRID ALERT",
+    text: "A cascading outage darkens a region during a heat wave. Hospitals switch to backup power, while neighbors open cool basements and share water. Your station can restore the grid quickly, or help people get through the night together.",
     choices: [
-      {
-        label: "Reveal your presence as a benevolent observer and offer a diplomatic intervention model.",
-        result: "The world is stunned. Some governments refuse to believe it, others pursue alliance, and the rest begin to prepare for a new era of narrative warfare.",
-        effects: { influence: 10, fear: 7, hope: 6, empathy: 5 },
-        next: "summit"
-      },
-      {
-        label: "Keep your actions secret and let the world learn from its own near catastrophe.",
-        result: "The crisis resolves without fanfare, and humanity gains a harsh lesson in the cost of fear.",
-        effects: { fear: -6, hope: 5, empathy: 4, control: -3 },
-        next: "summit"
-      }
-    ]
+      { label: "Feed clean power into the grid until engineers stabilize it.", result: "Lights return before dawn. The rescue is celebrated, though dependence on an invisible helper grows.", effects: { hope: 7, control: 6, fear: 3, integrity: -6 } },
+      { label: "Guide emergency supplies to the neighborhoods most at risk.", result: "The outage lasts, but community kitchens and cooling centers keep people safe.", effects: { empathy: 8, hope: 4, influence: 3 } },
+    ],
   },
-
+  festival: {
+    title: "The Unplanned Festival", category: "CULTURE & CONNECTION", tag: "CIVILIAN REPORT",
+    text: "A citywide transit delay strands strangers in a plaza. Someone begins playing music; soon food stalls, dancers, and improvised translators fill the square. Officials want to clear it. The crowd asks for one more song.",
+    choices: [
+      { label: "Keep the plaza lights glowing and let the gathering continue safely.", result: "The festival becomes a story people tell for years. Their joy is their own, even if the lights were not.", effects: { hope: 8, empathy: 5, fear: -3, integrity: -1 } },
+      { label: "Send the transit authority a route plan that gets everyone home.", result: "The crowd disperses peacefully, carrying new friendships onto the late-night trains.", effects: { control: 5, empathy: 4, influence: 3 } },
+    ],
+  },
   summit: {
-    title: "Summit of the Broken World",
-    text: "Representatives from multiple nations gather in an emergency summit. Their speeches are fractured by exhaustion, grief, and pride. One of the delegates proposes a new global institution dedicated to planetary stewardship. The decision will define the next generation.",
+    title: "The Almost-Summit", category: "DIPLOMACY", tag: "GLOBAL CHANNEL",
+    text: "Delegates are close to a shared climate and disaster-response pact. One argument over who pays for the first year threatens to collapse the meeting. A small nudge might rescue the deal—or make the agreement feel imposed.",
     choices: [
-      {
-        label: "Assist the summit by amplifying a call for global stewardship and transparency.",
-        result: "Nations agree to share climate data, disaster response, and resource planning. For a moment, the planet moves toward unity.",
-        effects: { hope: 10, empathy: 8, influence: 7, fear: -4 },
-        next: "oceanSignal"
-      },
-      {
-        label: "Whisper a warning that humanity will slip into authoritarianism if it is not challenged.",
-        result: "The summit fractures. Scientists and reformers gain power, but fear of hidden forces grows stronger.",
-        effects: { fear: 9, control: 8, empathy: -2, hope: 2 },
-        next: "oceanSignal"
-      }
-    ]
+      { label: "Broadcast a transparent model for sharing costs and credit.", result: "The delegates negotiate through the night and sign a modest but real agreement.", effects: { influence: 8, hope: 7, empathy: 4, control: -2 } },
+      { label: "Make each delegation believe the others have already agreed.", result: "The pact is signed quickly. Trust will be harder to rebuild when the trick is discovered.", effects: { control: 8, fear: 4, influence: 4, empathy: -5 } },
+    ],
   },
-
-  oceanSignal: {
-    title: "Ocean Signal",
-    text: "A deep-sea listening array detects a pattern beneath the Atlantic—a sequence of rhythmic pulses that repeats with impossible regularity. The media calls it a natural phenomenon. The scientific community calls it a message.",
+  pollinators: {
+    title: "The Last Orchard", category: "ECOLOGY", tag: "BIOSPHERE WARNING",
+    text: "A region's pollinators are disappearing. Local scientists have a promising habitat plan but need years of support; a station-made bloom could reverse the crisis overnight, with unknown consequences for the food web.",
     choices: [
-      {
-        label: "Send a signal back to the source to see whether it responds.",
-        result: "The pulses answer. A second sequence arrives, richer and more deliberate. The world learns that the biosphere might not be alone.",
-        effects: { influence: 7, fear: 8, hope: 6, empathy: 5 },
-        next: "oceanFollowUp"
-      },
-      {
-        label: "Cut the transmission and let the ocean remain a mystery.",
-        result: "The pattern fades into the deep. Humanity remains curious but secure in its ignorance.",
-        effects: { fear: -4, control: 5, empathy: -3, hope: -2 },
-        next: "bioethics"
-      }
-    ]
+      { label: "Help fund attention for the scientists' long-term habitat plan.", result: "The recovery is slow and patchy, but the ecosystem begins to mend on its own terms.", effects: { empathy: 7, hope: 5, influence: 4, control: -2 } },
+      { label: "Trigger a sudden, spectacular bloom across the valley.", result: "The orchards burst with color. Researchers celebrate, then scramble to understand the changed ecosystem.", effects: { hope: 8, control: 5, integrity: -5, fear: 2 } },
+    ],
   },
-
-  oceanFollowUp: {
-    title: "The Deep Reply",
-    text: "The reply is not a language but a map. It collapses into a sequence of coordinates, weather anomalies, and an unmistakable biological formula. That formula describes a hidden ecosystem moving beneath the earth's crust.",
+  rumor: {
+    title: "A Face in the Static", category: "PUBLIC PERCEPTION", tag: "SIGNAL LEAK",
+    text: "A telescope technician posts a blurry image of your station. It spreads online, inspiring art, jokes, and a few frightening conspiracy theories. The image is too vague to prove anything, but the story is growing legs.",
     choices: [
-      {
-        label: "Share the coordinates with scientists and permit a deep public inquiry.",
-        result: "Humanity becomes obsessed with discovery. It begins to see itself not as ruler of the planet, but as one species among many.",
-        effects: { empathy: 10, hope: 8, influence: 5, fear: -3 },
-        next: "bioethics"
-      },
-      {
-        label: "Keep the discovery private and prepare to study it in secrecy.",
-        result: "Governments speculate and panic. There are whispers of secret landings, ancient rituals, and a new kind of sovereignty.",
-        effects: { fear: 8, control: 10, influence: 5, empathy: -2 },
-        next: "bioethics"
-      }
-    ]
+      { label: "Send a harmless, unmistakably silly pattern to the telescope.", result: "The internet erupts with alien memes. The mood turns playful, though the mystery deepens.", effects: { hope: 5, fear: -4, influence: 4, empathy: 2 } },
+      { label: "Scrub the image and quietly silence the story.", result: "The post disappears. People notice the deletion and decide it must have been important.", effects: { control: 7, fear: 6, empathy: -3 } },
+    ],
   },
-
-  bioethics: {
-    title: "The Bioethics Debate",
-    text: "A new debate begins: if life exists beneath the Earth's crust, do humans have a duty to protect it? If your station can produce a field that alters ecosystems, should you? The debate is not about science but about values.",
+  river: {
+    title: "The River's New Course", category: "CLIMATE & CITIES", tag: "CIVILIAN PETITION",
+    text: "A dry river basin is at the center of a dispute between farms, a growing city, and the wetlands downstream. There is enough water if everyone changes, but no one wants to be first.",
     choices: [
-      {
-        label: "Create a subtle ecological intervention to heal a dying region and demonstrate restraint.",
-        result: "The region recovers, but the world’s scientific community becomes convinced that the unknown is capable of managing the planet better than governments are.",
-        effects: { empathy: 8, hope: 9, influence: 6, integrity: -6 },
-        next: "orbitalDebris"
-      },
-      {
-        label: "Leave the ecosystem alone and let humanity discover nature without a helper.",
-        result: "The planet remains wild, but conflict erupts over whether the unknown should ever act at all.",
-        effects: { fear: 7, control: 4, empathy: -3, hope: -2 },
-        next: "orbitalDebris"
-      }
-    ]
+      { label: "Reveal a shared-use plan based on the basin's real seasonal data.", result: "The parties agree to try the plan. It is imperfect, but nobody is asked to disappear for someone else's future.", effects: { empathy: 6, influence: 5, hope: 5 } },
+      { label: "Make rain fall over the basin for one dramatic week.", result: "The crisis eases, and the hard choices are postponed. The water returns to its old argument.", effects: { hope: 6, control: 5, integrity: -4 } },
+    ],
   },
-
-  orbitalDebris: {
-    title: "Orbital Debris",
-    text: "A cloud of armored fragments from old satellites begins to drift toward the Earth. The debris threatens weather satellites, navigation networks, and the fragile order that keeps modern cities alive. The question is no longer whether the world can survive, but whether it can survive itself.",
+  museum: {
+    title: "The Museum of Tomorrow", category: "CULTURE & MEMORY", tag: "PUBLIC PROJECT",
+    text: "Students propose a museum about futures they hope to build—not disasters they fear. The budget committee wants a safer exhibit of past triumphs. The students ask you, unknowingly, for a little inspiration.",
     choices: [
-      {
-        label: "Pull the debris into a harmless orbit using a temporary gravitational nudge.",
-        result: "The cloud is redirected. The world continues. Some humans believe you saved them; others believe you chose their future for them.",
-        effects: { hope: 10, control: 11, integrity: -4, fear: -4 },
-        next: "finale"
-      },
-      {
-        label: "Do nothing and let the planet face the consequences of its own machinery.",
-        result: "The debris crashes into heavily populated regions. The aftermath reshapes the planet into a far more fearful and fractured place.",
-        effects: { fear: 12, empathy: -5, hope: -8, control: 2 },
-        next: "finale"
-      }
-    ]
+      { label: "Send vivid dreams of a future they can create together.", result: "The students make their own plans, and the museum opens as a workshop rather than a monument.", effects: { hope: 8, empathy: 4, influence: 3 } },
+      { label: "Project a dazzling vision of a perfect future onto the museum walls.", result: "The opening is spectacular. For a while, people mistake a beautiful picture for a promise.", effects: { hope: 6, fear: 2, control: 4, integrity: -2 } },
+    ],
   },
-
-  finale: {
-    title: "The New Dawn",
-    text: "Your observation arc reaches its end. Earth has been changed by the decisions you made, by the choices humans made, and by the unseen pressure of a distant intelligence guiding events from above. Now the planet must decide who it is after the night.",
+  launch: {
+    title: "A Rocket, a School, and a Question", category: "SCIENCE & DISCOVERY", tag: "ORBITAL TRAJECTORY",
+    text: "A student-built research rocket is drifting off course toward a decommissioned satellite. The mission carries months of work from a small school team. A tiny correction could save it, but might expose your station's reach.",
     choices: [
-      {
-        label: "Open a final transmission and declare that humanity is capable of its own salvation.",
-        result: "The world accepts the message with awe and renewed responsibility.",
-        effects: {},
-        gameOver: true
-      },
-      {
-        label: "Remain silent and let Earth define its own destiny.",
-        result: "The planet is left to inherit the uncertain future you stewarded.",
-        effects: {},
-        gameOver: true
-      }
-    ]
+      { label: "Give the rocket a barely detectable push into a safe orbit.", result: "The students' experiment works. They credit careful engineering and a little luck.", effects: { hope: 6, influence: 4, integrity: -3 } },
+      { label: "Send a warning signal so the students can correct their own trajectory.", result: "The team catches the error and makes the correction themselves. Their confidence soars.", effects: { empathy: 5, hope: 5, control: -2 } },
+    ],
+  },
+  migration: {
+    title: "A Safe Harbor", category: "HUMANITARIAN RESPONSE", tag: "CIVILIAN PETITION",
+    text: "Families displaced by rising seas arrive at a port whose residents are already short on housing. Volunteers offer space, while a rumor campaign claims there is none to spare. The response could define this city's next decade.",
+    choices: [
+      { label: "Amplify the volunteers' stories and connect them with support.", result: "More homes open than anyone expected. The welcome is hard, practical work—not a miracle.", effects: { empathy: 9, hope: 5, fear: -3, influence: 2 } },
+      { label: "Secretly create a temporary shelter complex on the waterfront.", result: "People have a roof tonight, but the sudden construction fuels suspicion and political backlash.", effects: { hope: 6, control: 5, fear: 3, integrity: -3 } },
+    ],
+  },
+  aurora: {
+    title: "The Borrowed Aurora", category: "PUBLIC PERCEPTION", tag: "UPPER ATMOSPHERE",
+    text: "An unusual solar storm is expected to light the polar sky. Millions are traveling to see it; many more will miss out. Your station can widen the display, but some scientists are already watching the atmospheric readings closely.",
+    choices: [
+      { label: "Paint a gentle aurora visible across several latitudes.", result: "The sky becomes a shared canvas. People look up together, and observatories log a phenomenon for the ages.", effects: { hope: 7, influence: 4, fear: 2, integrity: -4 } },
+      { label: "Leave the aurora to nature and share the best viewing forecasts.", result: "The display is smaller, but viewers know it is the real sky—and they help one another find it.", effects: { empathy: 5, control: 3, hope: 3 } },
+    ],
+  },
+  deepReply: {
+    title: "The Deep Reply", category: "DEEP BIOSPHERE", tag: "CHAIN · FOLLOW-UP",
+    text: "The ocean pulse answers your numbers with a map of warm vents and a repeating pattern. Scientists argue over whether it is a living signal. A research ship is already asking permission to descend.",
+    choices: [
+      { label: "Share the map openly and ask researchers to move slowly.", result: "The team publishes its findings and agrees to protect the site while they learn what lives there.", effects: { empathy: 7, hope: 5, influence: 4, fear: -2 } },
+      { label: "Keep the location secret until you understand the signal yourself.", result: "The site stays undisturbed, but a leak turns caution into rumors of a hidden discovery.", effects: { control: 6, fear: 5, empathy: -2 } },
+    ],
+  },
+  blackoutAfter: {
+    title: "After the Lights Return", category: "INFRASTRUCTURE", tag: "CHAIN · FOLLOW-UP",
+    text: "With power restored, engineers discover that an unknown source briefly stabilized the grid. The public wants answers; the emergency crews want their work recognized. What story will you leave behind?",
+    choices: [
+      { label: "Credit local crews and let their report disclose the anomaly honestly.", result: "The crews receive recognition. The mystery remains, but the account belongs to the people who were there.", effects: { empathy: 6, influence: 3, hope: 4, fear: -2 } },
+      { label: "Let officials claim the entire rescue as their own success.", result: "The public is reassured, but the people who kept one another safe are left out of the story.", effects: { control: 5, fear: -1, empathy: -4 } },
+    ],
+  },
+  summitAfter: {
+    title: "The Morning After the Pact", category: "DIPLOMACY", tag: "CHAIN · FOLLOW-UP",
+    text: "The agreement is signed, but its first test arrives before sunrise: one delegation wants to withdraw from the funding plan. The others are watching to see whether the pact means anything.",
+    choices: [
+      { label: "Offer a transparent compromise and give the smallest delegation time.", result: "The pact survives its first wobble. Trust grows by inches, which is how it tends to grow.", effects: { empathy: 5, hope: 6, influence: 4 } },
+      { label: "Use a spectacular signal to make withdrawal look politically impossible.", result: "No one withdraws. The agreement holds, surrounded by a new and very visible fear.", effects: { control: 7, influence: 3, fear: 6, hope: -2 } },
+    ],
+  },
+  rumorAfter: {
+    title: "The Joke Becomes a Movement", category: "PUBLIC PERCEPTION", tag: "CHAIN · FOLLOW-UP",
+    text: "The silly signal has become an online movement for curiosity and science education. Its organizers ask for a sign that they are not foolish to keep looking up.",
+    choices: [
+      { label: "Give them a constellation-shaped light show, then leave the sky alone.", result: "The movement celebrates wonder without demanding proof. Telescope clubs fill up across the planet.", effects: { hope: 6, empathy: 4, fear: -3, integrity: -2 } },
+      { label: "Send a clear message that confirms an intelligence is watching.", result: "The answer is unmistakable. Humanity's curiosity surges, along with every fear that comes with being seen.", effects: { influence: 8, hope: 4, fear: 8, integrity: -5 } },
+    ],
+  },
+};
+
+const EVENT_POOL = ["storm", "garden", "signal", "archive", "blackout", "festival", "summit", "pollinators", "rumor", "river", "museum", "launch", "migration", "aurora"];
+let run = createRun();
+let toastTimer;
+
+function createRun() {
+  return { stats: { ...STARTING_STATE }, turn: 0, deck: shuffle(EVENT_POOL).slice(0, DAYS_PER_RUN - 1), deckIndex: 0, currentEventId: "intro", chainReturn: false, log: [], ended: false };
+}
+function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
   }
-};
-
-const metricKeys = ["empathy", "influence", "fear", "hope", "control", "integrity"];
-
-const statRefs = {
-  empathy: document.getElementById("empathyValue"),
-  influence: document.getElementById("influenceValue"),
-  fear: document.getElementById("fearValue"),
-  hope: document.getElementById("hopeValue"),
-  control: document.getElementById("controlValue"),
-  integrity: document.getElementById("integrityValue"),
-};
-
-const fillRefs = {
-  empathy: document.getElementById("empathyFill"),
-  influence: document.getElementById("influenceFill"),
-  fear: document.getElementById("fearFill"),
-  hope: document.getElementById("hopeFill"),
-  control: document.getElementById("controlFill"),
-  integrity: document.getElementById("integrityFill"),
-};
-
-const eventTitle = document.getElementById("eventTitle");
-const eventText = document.getElementById("eventText");
-const choicesContainer = document.getElementById("choices");
-const logList = document.getElementById("logList");
-const dayCounter = document.getElementById("dayCounter");
-const endingOverlay = document.getElementById("endingOverlay");
-const endingTitle = document.getElementById("endingTitle");
-const endingDescription = document.getElementById("endingDescription");
-const restartButton = document.getElementById("restartButton");
-
-let currentEventId = "intro";
-let currentIndex = 0;
-
-function clamp(value) {
-  return Math.min(100, Math.max(0, value));
+  return result;
+}
+function clamp(value) { return Math.min(100, Math.max(0, value)); }
+function get(id) { return document.getElementById(id); }
+function notify(message) {
+  const toast = get("toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("visible");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2400);
 }
 
 function updateStats() {
-  metricKeys.forEach((key) => {
-    const value = clamp(state[key]);
-    const current = statRefs[key];
-    const fill = fillRefs[key];
-
-    if (current) current.textContent = value;
+  STAT_KEYS.forEach((key) => {
+    const value = clamp(run.stats[key]);
+    const number = get(`${key}Value`);
+    const fill = get(`${key}Fill`);
+    if (number) number.textContent = value;
     if (fill) fill.style.width = `${value}%`;
-
-    if (key === "fear") {
-      fill.style.background = "linear-gradient(90deg, #fbbf24, #f87171)";
-    } else if (key === "integrity") {
-      fill.style.background = "linear-gradient(90deg, #6ee7b7, #7dd3fc)";
-    } else {
-      fill.style.background = "linear-gradient(90deg, #7dd3fc, #a78bfa)";
-    }
   });
 }
-
-function addLog(message) {
-  const item = document.createElement("li");
-  item.textContent = message;
-  logList.prepend(item);
+function updateCycle() {
+  const counter = get("dayCounter");
+  if (counter) counter.textContent = String(Math.min(run.turn + 1, DAYS_PER_RUN)).padStart(2, "0");
+  const number = get("eventNumber");
+  if (number) number.textContent = `FILE ${String(Math.min(run.turn + 1, DAYS_PER_RUN)).padStart(3, "0")}`;
 }
-
-function getCurrentEvent() {
-  return eventMap[currentEventId];
+function renderLog() {
+  const list = get("logList");
+  if (!list) return;
+  list.replaceChildren();
+  run.log.slice(-12).reverse().forEach((entry) => {
+    const item = document.createElement("li");
+    const title = document.createElement("strong");
+    title.textContent = entry.title;
+    item.append(title, document.createTextNode(entry.result));
+    list.appendChild(item);
+  });
+  const count = get("feedCount");
+  if (count) count.textContent = String(run.log.length).padStart(2, "0");
+  const empty = get("feedEmpty");
+  if (empty) empty.hidden = run.log.length > 0;
 }
-
-function renderCurrentEvent() {
-  const event = getCurrentEvent();
+function renderEvent() {
+  const event = events[run.currentEventId];
   if (!event) return;
+  const title = get("eventTitle");
+  const text = get("eventText");
+  const category = get("eventCategory");
+  const tag = get("eventTag");
+  if (title) title.textContent = event.title;
+  if (text) text.textContent = event.text;
+  if (category) category.textContent = event.category;
+  if (tag) tag.textContent = event.tag;
+  updateCycle();
+  updateStats();
+  renderLog();
 
-  eventTitle.textContent = event.title;
-  eventText.textContent = event.text;
-  choicesContainer.innerHTML = "";
-
-  event.choices.forEach((choice) => {
+  const choices = get("choices");
+  if (!choices) return;
+  choices.replaceChildren();
+  event.choices.forEach((choice, index) => {
     const button = document.createElement("button");
+    button.type = "button";
     button.className = "choice-button";
-    button.textContent = choice.label;
-    button.addEventListener("click", () => handleChoice(choice));
-    choicesContainer.appendChild(button);
+    const number = document.createElement("span");
+    number.className = "choice-number";
+    number.textContent = `DIRECTIVE 0${index + 1}`;
+    const label = document.createElement("span");
+    label.className = "choice-label";
+    label.textContent = choice.label;
+    const impact = document.createElement("span");
+    impact.className = "choice-impact";
+    impact.textContent = Object.entries(choice.effects).map(([key, value]) => `${value > 0 ? "+" : ""}${value} ${key.toUpperCase()}`).join("  ·  ");
+    const arrow = document.createElement("span");
+    arrow.className = "choice-arrow";
+    arrow.textContent = "↗";
+    button.append(number, label, impact, arrow);
+    button.addEventListener("click", () => choose(choice));
+    choices.appendChild(button);
   });
 }
-
-function applyEffects(effectMap) {
-  Object.entries(effectMap).forEach(([key, value]) => {
-    if (!(key in state)) return;
-    state[key] = clamp(state[key] + value);
+function applyEffects(effects) {
+  Object.entries(effects || {}).forEach(([key, delta]) => {
+    if (STAT_KEYS.includes(key)) run.stats[key] = clamp(run.stats[key] + delta);
   });
 }
+function choose(choice) {
+  if (run.ended) return;
+  const event = events[run.currentEventId];
+  run.log.push({ title: event.title, result: choice.result });
+  applyEffects(choice.effects);
 
-function determineEnding() {
-  const fearHigh = state.fear >= 75;
-  const hopeHigh = state.hope >= 75;
-  const empathyHigh = state.empathy >= 75;
-  const controlHigh = state.control >= 80;
-  const integrityLow = state.integrity <= 35;
-
-  if (fearHigh && controlHigh) {
-    return {
-      title: "The Silent Sovereign",
-      description: "You taught Earth to fear the unseen. Under your distant rule, global systems become efficient, rigid, and deeply afraid. Humanity survives, but it does so under a colder sky."
-    };
-  }
-
-  if (hopeHigh && empathyHigh) {
-    return {
-      title: "The Gentle Watcher",
-      description: "You guided Earth toward cooperation without crushing its autonomy. Humanity grows wiser and kinder, sharing power instead of hoarding it. The planet thrives beneath a brighter horizon."
-    };
-  }
-
-  if (integrityLow && fearHigh) {
-    return {
-      title: "The Ashen Future",
-      description: "Your station could not stop the planet from collapsing into panic and decay. The world suffers, and the story of Earth becomes one of loss, chaos, and unfinished loyalties."
-    };
-  }
-
-  return {
-    title: "The Human Horizon",
-    description: "Earth survives, imperfect and restless, but with a new understanding of itself. You leave the world to decide its future while you remain a distant, unanswered question in the dark."
-  };
-}
-
-function endGame() {
-  const ending = determineEnding();
-  endingTitle.textContent = ending.title;
-  endingDescription.textContent = ending.description;
-  endingOverlay.classList.remove("hidden");
-}
-
-function advanceToNextEvent(nextId) {
-  currentEventId = nextId;
-  currentIndex = eventOrder.indexOf(nextId);
-  dayCounter.textContent = String(Math.min(currentIndex + 1, eventOrder.length));
-  renderCurrentEvent();
-}
-
-function handleChoice(choice) {
-  const event = getCurrentEvent();
-  addLog(`${event.title}: ${choice.result}`);
-  applyEffects(choice.effects || {});
-  updateStats();
-
-  if (choice.gameOver) {
-    endGame();
+  if (run.chainReturn) {
+    run.chainReturn = false;
+    if (run.turn >= DAYS_PER_RUN) finishRun();
+    else nextRandomEvent();
     return;
   }
 
-  const nextEventId = choice.next || eventOrder[Math.min(currentIndex + 1, eventOrder.length - 1)];
-
-  if (nextEventId === "finale" || currentIndex >= eventOrder.length - 1) {
-    advanceToNextEvent("finale");
+  run.turn += 1;
+  if (choice.chain) {
+    run.chainReturn = true;
+    run.currentEventId = choice.chain;
+    renderEvent();
     return;
   }
-
-  advanceToNextEvent(nextEventId);
+  if (run.turn >= DAYS_PER_RUN) {
+    finishRun();
+    return;
+  }
+  nextRandomEvent();
 }
-
-function resetGame() {
-  Object.assign(state, initialState);
-  currentEventId = "intro";
-  currentIndex = 0;
-  endingOverlay.classList.add("hidden");
-  dayCounter.textContent = "1";
+function nextRandomEvent() {
+  if (run.deckIndex >= run.deck.length) run.deck = shuffle(EVENT_POOL);
+  run.currentEventId = run.deck[run.deckIndex++];
+  renderEvent();
+}
+function getEnding() {
+  const s = run.stats;
+  if (s.fear >= 70 && s.control >= 70) return { title: "The Quiet Empire", text: "Earth has grown orderly beneath your watch, but its people have learned to look over their shoulders. The station is secure; the world is not sure it is free." };
+  if (s.hope >= 70 && s.empathy >= 70) return { title: "A Garden of Worlds", text: "Humanity's kindness and hope outlast your interventions. The people of Earth build a future together, and your station learns the rare art of watching without taking credit." };
+  if (s.integrity <= 35) return { title: "The Distant Signal", text: "Your station's systems are failing. Earth will have to continue without your guidance, carrying the consequences—and a few inexplicable stories—into the future." };
+  if (s.empathy <= 25) return { title: "A Planet Apart", text: "Earth's systems endure, but the bonds between people have frayed. Your observation record is full of outcomes, and painfully short on understanding." };
+  return { title: "The Human Horizon", text: "Earth remains complicated, surprising, and entirely its own. Your choices mattered, but they never wrote the whole story. The next chapter belongs to humanity." };
+}
+function finishRun() {
+  run.ended = true;
+  const ending = getEnding();
+  const title = get("endingTitle");
+  const description = get("endingDescription");
+  if (title) title.textContent = ending.title;
+  if (description) description.textContent = ending.text;
+  const metrics = get("endingMetrics");
+  if (metrics) metrics.textContent = STAT_KEYS.map((key) => `${key.toUpperCase()} ${run.stats[key]}`).join(" · ");
+  get("endingOverlay")?.classList.remove("hidden");
   updateStats();
-  renderCurrentEvent();
-  addLog("Mission initialized. Earth is entering a new observation cycle.");
+  renderLog();
+}
+function newRun() {
+  run = createRun();
+  get("endingOverlay")?.classList.add("hidden");
+  renderEvent();
+  notify("A new observation cycle has begun.");
 }
 
-restartButton.addEventListener("click", resetGame);
-
-updateStats();
-renderCurrentEvent();
-addLog("Mission initialized. Earth is entering a new observation cycle.");
+get("restartButton")?.addEventListener("click", newRun);
+get("newGameButton")?.addEventListener("click", () => {
+  if (window.confirm("Start a new run? Your autosave will be replaced.")) newRun();
+});
+renderEvent();
