@@ -7,6 +7,7 @@
     <meta name="description" content="A choice-driven science-fiction story from an alien observation station above Earth." />
     <title>Observation Station — Earthwatch</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="room.css" />
   </head>
   <body>
     <div class="starfield" aria-hidden="true"></div>
@@ -14,10 +15,7 @@
       <header class="topbar">
         <div class="brand">
           <div class="brand-mark" aria-hidden="true">◉</div>
-          <div>
-            <p class="eyebrow">INTERSTELLAR OBSERVATORY · SECTOR 07</p>
-            <h1>Earthwatch <span>Station</span></h1>
-          </div>
+          <div><p class="eyebrow">INTERSTELLAR OBSERVATORY · SECTOR 07</p><h1>Earthwatch <span>Station</span></h1></div>
         </div>
         <div class="topbar-actions">
           <span class="link-status"><i></i> UPLINK STABLE</span>
@@ -29,15 +27,59 @@
       </header>
 
       <main>
+        <section class="observation-room" aria-label="Your alien observation room overlooking the rotating Earth">
+          <div class="room-label"><span class="room-live-dot"></span> OBSERVATION DECK <span class="room-divider">/</span> ORBITAL WINDOW 01</div>
+          <div class="window-view" aria-hidden="true">
+            <div class="space-moon"></div><div class="space-star star-one"></div><div class="space-star star-two"></div><div class="space-star star-three"></div>
+            <div class="earth-glow"><div class="earth">
+              <svg class="earth-map" viewBox="0 0 360 360" role="presentation">
+                <defs><clipPath id="globeClip"><circle cx="180" cy="180" r="174" /></clipPath><linearGradient id="ocean" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6ad8df"/><stop offset=".55" stop-color="#42aebf"/><stop offset="1" stop-color="#287a9d"/></linearGradient></defs>
+                <circle cx="180" cy="180" r="174" fill="url(#ocean)" />
+                <g class="continents" clip-path="url(#globeClip)" fill="#8ed58c" stroke="#5dbd8a" stroke-width="3" stroke-linejoin="round">
+                  <path d="M38 81l25-17 19 5 11 15 20 4 14 15-6 12 13 13-9 13-18-3-7 12-15 4-5 18-13 9-5 20-12-5-7-17-15-9-5-24-14-10 4-24 13-12z"/>
+                  <path d="M112 202l20 1 16 15 7 19-4 18-10 12-3 23-13 21-9 22-13-15-1-18-11-18 2-23-8-16 5-23z"/>
+                  <path d="M176 68l24-12 20 7 8 13 20 4 10 14 18 2 12 14-9 12-21-3-8 12-22 4-8 20-19 8-8 22-18-2-9-14-22-4-7-16-18-10 4-22 15-9 4-20 18-6z"/>
+                  <path d="M203 187l19-9 21 6 14 18 1 18 14 18-5 26-15 13-4 23-14 16-14-11-7-26-16-17-4-21-12-17 3-20z"/>
+                  <path d="M287 254l22-10 20 9 10 18-11 19-24 3-16-15z"/>
+                  <path d="M17 244l17-8 11 11-7 18-16-2z"/>
+                </g>
+                <path d="M53 88c35-43 92-68 147-67-61 7-108 32-142 78-18 26-28 55-32 84-9-34 2-70 27-95z" fill="#fff" opacity=".17" clip-path="url(#globeClip)" />
+              </svg>
+              <div class="earth-clouds"></div><div class="earth-shade"></div>
+            </div></div>
+            <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+            <div class="window-reflection"></div>
+          </div>
+          <div class="window-frame"><span></span><span></span><span></span><span></span><i></i></div>
+          <div class="room-console console-left"><span>EARTH / LIVE</span><b>● ● ●</b><div class="console-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+          <div class="room-console console-right"><span>ORBITAL VIEW</span><b>SYNC 99.8%</b><div class="console-wave">〰 〰 〰</div></div>
+          <div class="alien-character" aria-label="A small friendly alien watches Earth from the window">
+            <svg viewBox="0 0 180 230" role="img" aria-label="Cartoon alien observer">
+              <ellipse cx="90" cy="219" rx="68" ry="9" fill="#050d16" opacity=".5" />
+              <path d="M53 153c-15 9-22 25-18 43l9 23h92l9-23c4-18-3-34-18-43z" fill="#5268bd" stroke="#293b85" stroke-width="5" />
+              <path d="M51 172l-18 25 12 8 23-20M129 172l18 25-12 8-23-20" fill="#72dfc4" stroke="#328d83" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M66 190l-8 26m56-26 8 26" stroke="#263b83" stroke-width="8" stroke-linecap="round" />
+              <ellipse cx="90" cy="99" rx="68" ry="73" fill="#79e2c6" stroke="#318e83" stroke-width="6" />
+              <path d="M36 71L15 43c-4-6 2-12 8-8l30 19m91 17 20-28c4-6-2-12-8-8l-29 20" fill="#79e2c6" stroke="#318e83" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+              <ellipse cx="65" cy="100" rx="17" ry="23" fill="#172841"/><ellipse cx="115" cy="100" rx="17" ry="23" fill="#172841"/>
+              <ellipse cx="70" cy="92" rx="5" ry="7" fill="white"/><ellipse cx="120" cy="92" rx="5" ry="7" fill="white"/>
+              <path d="M76 132q14 12 28 0" fill="none" stroke="#318e83" stroke-width="5" stroke-linecap="round" />
+              <circle cx="39" cy="124" r="8" fill="#f59d9b" opacity=".8"/><circle cx="141" cy="124" r="8" fill="#f59d9b" opacity=".8"/>
+              <path d="M71 162l19 15 19-15" fill="#f2bd6d" stroke="#c78243" stroke-width="4" stroke-linejoin="round" />
+              <path d="M52 202h28m20 0h28" stroke="#f2bd6d" stroke-width="8" stroke-linecap="round" />
+              <path d="M75 30l-9-13m39 13 9-13" stroke="#318e83" stroke-width="4" stroke-linecap="round"/><circle cx="64" cy="13" r="5" fill="#f2bd6d"/><circle cx="116" cy="13" r="5" fill="#f2bd6d"/>
+            </svg>
+          </div>
+          <div class="room-caption"><span>OUR BLUE DOT</span><span>Rotation: 1,670 km/h <i></i></span></div>
+        </section>
+
         <section class="mission-strip" aria-label="Mission status">
           <div><span class="eyebrow">OBSERVATION CYCLE</span><strong>Earth, year <span id="earthYear">2049</span></strong></div>
           <div class="cycle-indicator"><span id="dayCounter">01</span><small> / 16</small></div>
           <div class="save-state" id="saveStatus" aria-live="polite">AUTOSAVE READY</div>
         </section>
-
         <div class="game-layout">
-          <aside class="stats-panel panel">
-            <div class="section-heading"><div><p class="eyebrow">PLANETARY READOUT</p><h2>Earth’s balance</h2></div><span class="live-dot" aria-label="Live"></span></div>
+          <aside class="stats-panel panel"><div class="section-heading"><div><p class="eyebrow">PLANETARY READOUT</p><h2>Earth’s balance</h2></div><span class="live-dot" aria-label="Live"></span></div>
             <p class="panel-intro">Your interventions shift the systems below. No measure moves alone.</p>
             <div class="stat" data-stat="empathy"><div class="stat-header"><span>Empathy</span><strong id="empathyValue">55</strong></div><div class="bar"><span id="empathyFill"></span></div></div>
             <div class="stat" data-stat="influence"><div class="stat-header"><span>Influence</span><strong id="influenceValue">45</strong></div><div class="bar"><span id="influenceFill"></span></div></div>
@@ -47,39 +89,17 @@
             <div class="stat" data-stat="integrity"><div class="stat-header"><span>Station integrity</span><strong id="integrityValue">100</strong></div><div class="bar"><span id="integrityFill"></span></div></div>
             <div class="stats-note"><span>◈</span> Keep every system above zero. Extremes have consequences.</div>
           </aside>
-
-          <section class="story-panel" aria-labelledby="eventTitle">
-            <div class="event-card panel" id="eventCard">
-              <div class="event-meta"><span class="event-tag" id="eventTag">INCOMING TRANSMISSION</span><span id="eventNumber">FILE 001</span></div>
-              <div class="signal-line" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-              <p class="eyebrow" id="eventCategory">PLANETARY AFFAIRS</p>
-              <h2 id="eventTitle">Initializing observation…</h2>
-              <p id="eventText" class="event-copy"></p>
-              <div id="choices" class="choices"></div>
-              <p class="choice-hint">SELECT A DIRECTIVE <span>·</span> CONSEQUENCES ARE PERMANENT</p>
-            </div>
-          </section>
-
-          <aside class="log-panel panel">
-            <div class="section-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>Mission feed</h2></div><span class="feed-count" id="feedCount">00</span></div>
-            <ol id="logList" aria-live="polite"></ol>
-            <p class="feed-empty" id="feedEmpty">Your decisions will appear here.</p>
-          </aside>
+          <section class="story-panel" aria-labelledby="eventTitle"><div class="event-card panel" id="eventCard">
+            <div class="event-meta"><span class="event-tag" id="eventTag">INCOMING TRANSMISSION</span><span id="eventNumber">FILE 001</span></div>
+            <div class="signal-line" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <p class="eyebrow" id="eventCategory">PLANETARY AFFAIRS</p><h2 id="eventTitle">Initializing observation…</h2><p id="eventText" class="event-copy"></p><div id="choices" class="choices"></div><p class="choice-hint">SELECT A DIRECTIVE <span>·</span> CONSEQUENCES ARE PERMANENT</p>
+          </div></section>
+          <aside class="log-panel panel"><div class="section-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>Mission feed</h2></div><span class="feed-count" id="feedCount">00</span></div><ol id="logList" aria-live="polite"></ol><p class="feed-empty" id="feedEmpty">Your decisions will appear here.</p></aside>
         </div>
       </main>
       <footer><span>EARTHWATCH FIELD OFFICE</span><span>LISTEN CLOSELY. INTERVENE CAREFULLY.</span><span>◉ 07 · 2049</span></footer>
     </div>
-
-    <div id="endingOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="endingTitle">
-      <div class="ending-card panel">
-        <p class="eyebrow">OBSERVATION COMPLETE · FINAL REPORT</p>
-        <div class="ending-sigil" aria-hidden="true">✳</div>
-        <h2 id="endingTitle">The Earth has changed.</h2>
-        <p id="endingDescription"></p>
-        <div class="ending-metrics" id="endingMetrics"></div>
-        <button id="restartButton" class="primary-button" type="button">Begin another observation <span>→</span></button>
-      </div>
-    </div>
+    <div id="endingOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="endingTitle"><div class="ending-card panel"><p class="eyebrow">OBSERVATION COMPLETE · FINAL REPORT</p><div class="ending-sigil" aria-hidden="true">✳</div><h2 id="endingTitle">The Earth has changed.</h2><p id="endingDescription"></p><div class="ending-metrics" id="endingMetrics"></div><button id="restartButton" class="primary-button" type="button">Begin another observation <span>→</span></button></div></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="script.js"></script>
   </body>
